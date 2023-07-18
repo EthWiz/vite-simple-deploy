@@ -1,22 +1,28 @@
-name: Deploy to EC2
-
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debugging
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+        run: |
+          echo "$PRIVATE_KEY" | wc -l  # should print a number greater than 1
+          echo "$HOST"  # should print the IP address or DNS name of your EC2 instance
+          echo "$USERNAME"  # should print the username you use to log into your EC2 instance
+
       - name: Deploy to server
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $USERNAME@$HOST << EOF
+          mkdir ~/.ssh
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $USERNAME@$HOST << EOF
             cd /home/ubuntu/vite-simple-deploy
             git pull
             npm ci
