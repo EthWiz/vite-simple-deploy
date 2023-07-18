@@ -37,6 +37,9 @@ jobs:
 
             cd /home/ubuntu/vite-simple-deploy
             git pull
+
+            nvm install
+
             npm ci
             npm run build
             # Restart your server here, if necessary
