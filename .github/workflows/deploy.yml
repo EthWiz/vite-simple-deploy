@@ -17,14 +17,14 @@ jobs:
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
         run: |
-          echo "$SSH_PRIVATE_KEY" | wc -l  # should print a number greater than 1
+          echo ${{ secrets.MY_SECRET }} | wc -l  # should print a number greater than 1
           echo "$HOST"  # should print the IP address or DNS name of your EC2 instance
           echo "$USERNAME"  # should print the username you use to log into your EC2 instance
 
       - name: Deploy to server
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo ${{ secrets.MY_SECRET }} > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh -T -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $USERNAME@$HOST << EOF
             cd /home/ubuntu/vite-simple-deploy
