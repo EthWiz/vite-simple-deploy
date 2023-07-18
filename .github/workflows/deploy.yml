@@ -21,18 +21,18 @@ jobs:
           echo "$USERNAME"  # should print the username you use to log into your EC2 instance
 
       - name: Deploy to server
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          HOST: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
         run: |
-          mkdir ~/.ssh
           echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $USERNAME@$HOST << EOF
+          ssh -o StrictHostKeyChecking=no -i $USERNAME@$HOST << EOF
             cd /home/ubuntu/vite-simple-deploy
             git pull
             npm ci
             npm run build
             # Restart your server here, if necessary
           EOF
+        shell: bash
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
