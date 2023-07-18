@@ -17,7 +17,7 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
         run: |
           ssh -o StrictHostKeyChecking=no -i $PRIVATE_KEY $USERNAME@$HOST << EOF
-            cd /path/to/your/app
+            cd /home/ubuntu/vite-simple-deploy
             git pull
             npm ci
             npm run build
