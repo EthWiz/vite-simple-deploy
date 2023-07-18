@@ -22,9 +22,10 @@ jobs:
 
       - name: Deploy to server
         run: |
+          mkdir -p ~/.ssh
           echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no -i $USERNAME@$HOST << EOF
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $USERNAME@$HOST << EOF
             cd /home/ubuntu/vite-simple-deploy
             git pull
             npm ci
@@ -36,3 +37,4 @@ jobs:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
+ 
