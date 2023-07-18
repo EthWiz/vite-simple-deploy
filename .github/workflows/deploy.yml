@@ -10,25 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies and build
-        run: |
-          npm ci
-          npm run build
-
-      - name: Copy files
+      - name: Deploy to server
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
         run: |
-          mkdir ~/.ssh
-          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r ./build $USERNAME@$HOST:/path/to/your/app
-
-      - name: Install server dependencies and restart server
-        run: |
-          ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /vite-simple-app && npm install && pm2 restart all"
+          ssh -o StrictHostKeyChecking=no -i $PRIVATE_KEY $USERNAME@$HOST << EOF
+            cd /path/to/your/app
+            git pull
+            npm ci
+            npm run build
+            # Restart your server here, if necessary
+          EOF
